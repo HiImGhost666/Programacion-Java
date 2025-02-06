@@ -52,7 +52,7 @@ function displayDirectory(contents) {
                 currentPath = item.path; // Update current path
                 fetchContents(item.path).then(displayDirectory);
             });
-        } else if (item.type === 'file' && item.name.endsWith('.java')) {
+        } else if (item.type === 'file' && item.name.endsWith('.java') || item.name.endsWith('.txt')) {
             itemElement.textContent = `📄 ${item.name}`;
             itemElement.addEventListener('click', () => {
                 fetchFileContent(item);
