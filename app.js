@@ -14,7 +14,13 @@ const repos = {
         owner: 'HiImGhost666',
         repo: 'JavaScript',
         path: '' // lo mismo aquí
+    },
+    python: {
+        owner: 'HiImGhost666',
+        repo: 'Python',
+        path: '' // lo mismo aqui
     }
+    
 };
 
 // Estado inicial
