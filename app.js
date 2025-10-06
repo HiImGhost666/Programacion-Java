@@ -1,104 +1,113 @@
-const owner = 'HiImGhost666';
-const repo = 'Tareas_Programacion';
-const path = 'src';
+// 🔹 CONFIGURACIÓN DE REPOSITORIOS
+const repos = {
+    java: {
+        owner: 'HiImGhost666',
+        repo: 'Tareas_Programacion',
+        path: 'src'
+    },
+    php: {
+        owner: 'HiImGhost666',
+        repo: 'DSW25-T1',
+        path: 'public' // puedes cambiarlo cuando el repo esté creado
+    },
+    javascript: {
+        owner: 'HiImGhost666',
+        repo: 'JavaScript',
+        path: '' // lo mismo aquí
+    }
+};
+
+// Estado inicial
+let currentRepo = 'java';
+let currentPath = repos[currentRepo].path;
+let pathHistory = [];
+let allFiles = [];
 
 const directoryElement = document.getElementById('directory');
 const codeElement = document.getElementById('code');
-const searchInput = document.getElementById('search');
 const backButton = document.getElementById('back-button');
+const navbarButtons = document.querySelectorAll('#repo-navbar button');
 
-let allFiles = []; // Store all files for search functionality
-let currentPath = path; // Track the current directory path
-let pathHistory = []; // Track the navigation history
+// --- FUNCIONES PRINCIPALES ---
 
-// Fetch contents of a directory
 async function fetchContents(path) {
+    const { owner, repo } = repos[currentRepo];
     const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
     const data = await response.json();
     return data;
 }
 
-// Sort files and folders by name
 function sortContents(contents) {
     return contents.sort((a, b) => {
         if (a.type === b.type) {
             return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
         }
-        return a.type === 'dir' ? -1 : 1; // Folders first
+        return a.type === 'dir' ? -1 : 1;
     });
 }
 
-// Display directory contents
 function displayDirectory(contents) {
     directoryElement.innerHTML = '';
-    const sortedContents = sortContents(contents);
+    const sorted = sortContents(contents);
 
-    // Show/hide the back button based on the current path
-    if (currentPath !== path) {
+    if (currentPath !== repos[currentRepo].path) {
         backButton.classList.remove('hidden');
     } else {
         backButton.classList.add('hidden');
     }
 
-    // Add the back button to the directory listing
     directoryElement.appendChild(backButton);
-
-    sortedContents.forEach(item => {
-        const itemElement = document.createElement('div');
+    sorted.forEach(item => {
+        const div = document.createElement('div');
         if (item.type === 'dir') {
-            itemElement.textContent = `📁 ${item.name}`;
-            itemElement.addEventListener('click', () => {
-                pathHistory.push(currentPath); // Save current path to history
-                currentPath = item.path; // Update current path
+            div.textContent = `📁 ${item.name}`;
+            div.addEventListener('click', () => {
+                pathHistory.push(currentPath);
+                currentPath = item.path;
                 fetchContents(item.path).then(displayDirectory);
             });
-        } else if (item.type === 'file' && item.name.endsWith('.java') || item.name.endsWith('.txt')) {
-            itemElement.textContent = `📄 ${item.name}`;
-            itemElement.addEventListener('click', () => {
-                fetchFileContent(item);
-            });
-            allFiles.push(item); // Add file to searchable list
+        } else if (item.type === 'file' && (item.name.endsWith('.java') || item.name.endsWith('.txt') || item.name.endsWith('.php') || item.name.endsWith('.js'))) {
+            div.textContent = `📄 ${item.name}`;
+            div.addEventListener('click', () => fetchFileContent(item));
+            allFiles.push(item);
         }
-        directoryElement.appendChild(itemElement);
+        directoryElement.appendChild(div);
     });
 }
 
-// Fetch and display file content
 async function fetchFileContent(file) {
     const response = await fetch(file.download_url);
     const text = await response.text();
     codeElement.textContent = text;
 }
 
-// Search files for keywords
-async function searchFiles(keyword) {
-    const results = [];
-    for (const file of allFiles) {
-        const response = await fetch(file.download_url);
-        const text = await response.text();
-        if (text.toLowerCase().includes(keyword.toLowerCase())) {
-            results.push(file);
-        }
-    }
-    return results;
-}
-
-// Debounce function to limit API calls
-function debounce(func, delay) {
-    let timeoutId;
-    return function (...args) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => func.apply(this, args), delay);
-    };
-}
-
-// Back button functionality
 backButton.addEventListener('click', () => {
     if (pathHistory.length > 0) {
-        currentPath = pathHistory.pop(); // Go back to the previous path
+        currentPath = pathHistory.pop();
         fetchContents(currentPath).then(displayDirectory);
     }
 });
 
-// Initial load
+// 🔹 FUNCIÓN PARA CAMBIAR DE REPO
+function changeRepo(repoKey) {
+    currentRepo = repoKey;
+    currentPath = repos[repoKey].path;
+    pathHistory = [];
+    allFiles = [];
+
+    // Actualizar botones activos
+    navbarButtons.forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`#repo-navbar button[data-repo="${repoKey}"]`).classList.add('active');
+
+    // Cargar nuevo repositorio
+    codeElement.textContent = ''; // limpiar contenido
+    fetchContents(currentPath).then(displayDirectory);
+}
+
+// Añadir eventos a los botones del navbar
+navbarButtons.forEach(btn => {
+    btn.addEventListener('click', () => changeRepo(btn.dataset.repo));
+});
+
+// Carga inicial
 fetchContents(currentPath).then(displayDirectory);
