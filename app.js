@@ -7,7 +7,7 @@ const repos = {
     },
     php: {
         owner: 'HiImGhost666',
-        repo: 'DSW25-T1',
+        repo: 'DSW-T1',
         path: 'public' // puedes cambiarlo cuando el repo esté creado
     },
     javascript: {
