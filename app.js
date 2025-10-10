@@ -72,7 +72,7 @@ function displayDirectory(contents) {
                 currentPath = item.path;
                 fetchContents(item.path).then(displayDirectory);
             });
-        } else if (item.type === 'file' && (item.name.endsWith('.java') || item.name.endsWith('.txt') || item.name.endsWith('.php') || item.name.endsWith('.js') || item.name.endsWith('.py'))) {
+        } else if (item.type === 'file' && (item.name.endsWith('.java') || item.name.endsWith('.txt') || item.name.endsWith('.php') || item.name.endsWith('.js') || item.name.endsWith('.html') || item.name.endsWith('.py'))) {
             div.textContent = `📄 ${item.name}`;
             div.addEventListener('click', () => fetchFileContent(item));
             allFiles.push(item);
