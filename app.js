@@ -13,7 +13,7 @@ const repos = {
      phpT2: {
         owner: 'HiImGhost666',
         repo: 'PHPT2',
-        path: 'public' // puedes cambiarlo cuando el repo esté creado
+        path: '' // puedes cambiarlo cuando el repo esté creado
     },
     javascript: {
         owner: 'HiImGhost666',
