@@ -10,6 +10,11 @@ const repos = {
         repo: 'DSW-T1',
         path: 'public' // puedes cambiarlo cuando el repo esté creado
     },
+     phpT2: {
+        owner: 'HiImGhost666',
+        repo: 'PHPT2',
+        path: 'public' // puedes cambiarlo cuando el repo esté creado
+    },
     javascript: {
         owner: 'HiImGhost666',
         repo: 'JavaScript',
